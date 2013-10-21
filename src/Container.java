@@ -2,7 +2,9 @@ package src;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,7 +23,7 @@ public class Container
 			task = getTask(strings[0]);
 		}
 		task.setName(strings[0]);
-		task.setDuration(Float.parseFloat( strings[1]));
+		task.setDuration(Integer.parseInt( strings[1]));
 
 		for(int x = 2; x < strings.length; x = x+1) {
 	         Task pred = new Task();
@@ -61,9 +63,16 @@ public class Container
 		} 
 	}
 	
-	public void writeDOT( )
-	{
-		
+	public void writeDOT( ){
+		DotGenerator dotGen = new DotGenerator(this);
+	    PrintWriter out;
+		try {
+			out = new PrintWriter(new FileWriter("output.dot"), true);
+		    out.write(dotGen.Generate());
+		    out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public void printTaskList(){
 		for(Task task  : tasksList){
@@ -74,7 +83,7 @@ public class Container
 		return calculateCriticalPathImpl(findFinalTask(), findFinalTask().getDuration(), new ArrayList<Task>() );
 	}
 	
-	public float calculateCriticalPathImpl(Task task1, Float duration, ArrayList<Task> tasks )
+	public float calculateCriticalPathImpl(Task task1, int duration, ArrayList<Task> tasks )
 	{
 		System.out.println(task1.getPredcessorTask().size());
 		float longestWay = duration;

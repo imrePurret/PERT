@@ -7,7 +7,7 @@ public class Task
 {
 	public String name;
 	
-	public float duration;
+	public int duration;
 	
 	public boolean critical = false;
 	
@@ -28,12 +28,12 @@ public class Task
 		return critical;
 	}
 	
-	public void setDuration( float duration )
+	public void setDuration( int duration )
 	{
 		this.duration=duration;
 	}
 	
-	public float getDuration( )
+	public int getDuration( )
 	{
 		return duration;
 	}
