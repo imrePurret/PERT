@@ -1,5 +1,6 @@
 package src;
-public class Main {
+
+public class main {
 		public static void main(String[] args) {
 			Container container = new Container();
 			container.readPERT(args[0]);

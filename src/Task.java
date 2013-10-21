@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Task
 {
-	public String name;
+	private String name;
 	
-	public float duration;
+	private float duration;
 	
-	public boolean critical = false;
+	private boolean critical = false;
 	
 	private List<Task> successorTask = new ArrayList<Task>();
 	
