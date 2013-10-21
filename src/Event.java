@@ -1,10 +1,12 @@
+package src;
+
 public class Event
 {
 	private Task SuccessorTask;
 	
 	private Task PredecessorTask;
 	
-	public String Name;
+	public String name;
 	
 	
 	private Container unnamed;

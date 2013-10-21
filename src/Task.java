@@ -1,8 +1,14 @@
+package src;
+
+/**
+ * @(#) Task.java
+ */
+
 public class Task
 {
-	public String Name;
+	public String name;
 	
-	public float Duration;
+	public float duration;
 	
 	private Task Subtask;
 	
@@ -12,8 +18,7 @@ public class Task
 	
 	private Event Predcessor;
 	
-	public boolean Critical;
-	
+	public boolean critical;
 	
 	private Container taskContainer;
 	
@@ -27,44 +32,35 @@ public class Task
 		
 	}
 	
-	public void setCritical( boolean isCritical )
+	public void setCritical( boolean critical )
 	{
-		Critical=isCritical;
+		this.critical=critical;
 	}
 	
-	public boolean isIsCritical( )
+	public boolean isCritical( )
 	{
-		return Critical;
+		return critical;
 	}
 	
 	public void setDuration( float duration )
 	{
-		Duration=duration;
+		this.duration=duration;
 	}
 	
 	public float getDuration( )
 	{
-		return Duration;
+		return duration;
 	}
 	
 	public void setName( String name )
 	{
-		Name=name;
+		this.name=name;
 	}
 	
 	public String getName( )
 	{
-		return Name;
+		return name;
 	}
 	
-	public void setTask( Task task )
-	{
-		Task=task;
-	}
-	
-	public Task getTask( )
-	{
-		return Task;
-	}
 	
 }
