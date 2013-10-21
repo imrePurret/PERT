@@ -1,5 +1,3 @@
-package src;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +50,12 @@ public class Task
 
 	public List<Task> getPredcessorTask() {
 		return predcessorTask;
+	}
+
+	@Override
+	public String toString() {
+		return "Task [name=" + name + ", duration=" + duration + ", critical="
+				+ critical + "]";
 	}
 		
 }

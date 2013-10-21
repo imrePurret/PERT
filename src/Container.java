@@ -1,15 +1,16 @@
-package src;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Container
 {
-	private java.util.List<Task> tasksList = new ArrayList<Task>();
+	private List<Task> tasksList = new ArrayList<Task>();
+	private List<Task> longestPath = new ArrayList<Task>();
+	private float longestWay = 0;
 	
 	public void addTask( String[] strings )
 	{
@@ -122,25 +123,24 @@ public class Container
 	public float calculateCriticalPathImpl(Task task1, float duration, ArrayList<Task> tasks )
 	{
 		try{
+			tasks.add(task1);
 			float longestWay = duration;
 			if(task1.getPredcessorTask().size()==0){
-				return duration + task1.getDuration();
-			} else{
-				int n = 0;
-				int index = -1;
-				for(Task task : task1.getPredcessorTask()){
-					float dur = calculateCriticalPathImpl(task, duration + task.getDuration(), tasks);
-					if (dur>longestWay){
-						longestWay = dur;
-						index = n;
+				if(duration>this.longestWay){
+					this.longestWay = duration;
+					longestPath.clear();
+					for(Task taski : tasks){
+						longestPath.add(taski);
 					}
-					n +=1;
 				}
-				if(index != -1){
-					tasks.add(task1.getPredcessorTask().get(index));				
+				tasks.remove(task1);
+				return duration;
+			} else{
+				for(Task task : task1.getPredcessorTask()){
+					calculateCriticalPathImpl(task, duration + task.getDuration(), tasks);
 				}
 			}
-			for(Task task2 : tasks){
+			for(Task task2 : longestPath){
 				task2.setCritical(true);
 			}
 			findFinalTask().setCritical(true);
