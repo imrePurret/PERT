@@ -9,6 +9,7 @@ public class main {
 			Container container = new Container();
 			container.readPERT();
 			System.out.println(container.calculateCriticalPath());
+			container.printTaskList();
 	 
 		}
 }

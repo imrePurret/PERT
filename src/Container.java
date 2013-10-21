@@ -67,7 +67,7 @@ public class Container
 	}
 	public void printTaskList(){
 		for(Task task  : tasksList){
-			//System.out.println(task);
+			System.out.println(task);
 		}
 	}
 	public float calculateCriticalPath(){
@@ -76,22 +76,31 @@ public class Container
 	
 	public float calculateCriticalPathImpl(Task task1, Float duration, ArrayList<Task> tasks )
 	{
-		
 		System.out.println(task1.getPredcessorTask().size());
 		float longestWay = duration;
 		if(task1.getPredcessorTask().size()==0){
 			return duration + task1.getDuration();
 		} else{
+			int n = 0;
+			int index = -1;
 			for(Task task : task1.getPredcessorTask()){
-				System.out.println(task);
-				tasks.add(task);
 				float dur = calculateCriticalPathImpl(task, duration + task.getDuration(), tasks);
 				if (dur>longestWay){
-					tasks.add(task1);
 					longestWay = dur;
+					index = n;
 				}
+				n +=1;
+			}
+			System.out.println(index);
+			if(index != -1){
+				tasks.add(task1.getPredcessorTask().get(index));				
 			}
 		}
+		for(Task task2 : tasks){
+			task2.setCritical(true);
+		}
+		findFinalTask().setCritical(true);
+		findStartTask().setCritical(true);
 		System.out.println(tasks);
 		return longestWay;
 	}
