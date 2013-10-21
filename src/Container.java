@@ -6,16 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class Container
 {
 	private java.util.List<Task> tasksList = new ArrayList<Task>();
 	
-	private Task task;
-	
 	public void addTask( String[] strings )
 	{
+		if(strings.length<2){
+			System.out.println("Invalid input!");
+			System.exit(0);
+		}
 		Task task = new Task();
 		if(getTask(strings[0])==null){
 			tasksList.add(task);
@@ -23,11 +24,16 @@ public class Container
 			task = getTask(strings[0]);
 		}
 		task.setName(strings[0]);
-		task.setDuration(Integer.parseInt( strings[1]));
-
+		try{
+			task.setDuration(Float.parseFloat( strings[1]));			
+		} catch(Exception e){
+			System.out.println("Invalid input!");
+			System.exit(0);
+		}
+		
 		for(int x = 2; x < strings.length; x = x+1) {
 	         Task pred = new Task();
-	 	     if(getTask(strings[0])==null){
+	 	     if(getTask(strings[x])==null){
 			 	tasksList.add(pred);
 			 } else{
 			 	pred = getTask(strings[x]);
@@ -46,78 +52,110 @@ public class Container
 		}
 		return null;
 	}
-	public void readPERT( )
+	public void readPERT(String args )
 	{
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("example.pert"));
-			 
+			BufferedReader br = new BufferedReader(new FileReader(args));
 			String sCurrentLine;
  
 			while ((sCurrentLine = br.readLine()) != null) {
 				this.addTask(sCurrentLine.split(","));
-				this.printTaskList();
 			}
+			validate();
  
 		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+			System.out.println("Invalid input!");
+			System.exit(0);
+		} catch (Error e){
+			System.out.println("Invalid input!");
+			System.exit(0);
+		}
 	}
 	
-	public void writeDOT( ){
+	private void validate() {
+		if(findStartTask()==null){
+			System.out.println("Invalid input - there is no start task.");
+			System.exit(0);
+		}
+		if(findFinalTask()==null){
+			System.out.println("Invalid input - there is no final task.");
+			System.exit(0);
+		}
+		int counter = 0;
+		for(Task task  : tasksList){
+			if(task.getSuccessorTask().size()==0){
+				counter += 1;
+			}
+		}
+		if (counter>1){
+			System.out.println("Invalid input - there is more than one task without successors.");
+			System.exit(0);
+		}
+		counter = 0;
+		for(Task task  : tasksList){
+			if(task.getPredcessorTask().size()==0){
+				counter += 1;
+			}
+		}
+		if (counter>1){
+			System.out.println("Invalid input - there is more than one task without predecessors.");
+			System.exit(0);
+		}
+	}
+
+	public void writeDOT(String args ){
 		DotGenerator dotGen = new DotGenerator(this);
 	    PrintWriter out;
 		try {
-			out = new PrintWriter(new FileWriter("output.dot"), true);
+			String[] arg = args.split("\\.");
+			out = new PrintWriter(new FileWriter(arg[0]+".dot"), true);
 		    out.write(dotGen.Generate());
 		    out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	public void printTaskList(){
-		for(Task task  : tasksList){
-			System.out.println(task);
-		}
-	}
 	public float calculateCriticalPath(){
 		return calculateCriticalPathImpl(findFinalTask(), findFinalTask().getDuration(), new ArrayList<Task>() );
 	}
 	
-	public float calculateCriticalPathImpl(Task task1, int duration, ArrayList<Task> tasks )
+	public float calculateCriticalPathImpl(Task task1, float duration, ArrayList<Task> tasks )
 	{
-		System.out.println(task1.getPredcessorTask().size());
-		float longestWay = duration;
-		if(task1.getPredcessorTask().size()==0){
-			return duration + task1.getDuration();
-		} else{
-			int n = 0;
-			int index = -1;
-			for(Task task : task1.getPredcessorTask()){
-				float dur = calculateCriticalPathImpl(task, duration + task.getDuration(), tasks);
-				if (dur>longestWay){
-					longestWay = dur;
-					index = n;
+		try{
+			float longestWay = duration;
+			if(task1.getPredcessorTask().size()==0){
+				return duration + task1.getDuration();
+			} else{
+				int n = 0;
+				int index = -1;
+				for(Task task : task1.getPredcessorTask()){
+					float dur = calculateCriticalPathImpl(task, duration + task.getDuration(), tasks);
+					if (dur>longestWay){
+						longestWay = dur;
+						index = n;
+					}
+					n +=1;
 				}
-				n +=1;
+				if(index != -1){
+					tasks.add(task1.getPredcessorTask().get(index));				
+				}
 			}
-			System.out.println(index);
-			if(index != -1){
-				tasks.add(task1.getPredcessorTask().get(index));				
+			for(Task task2 : tasks){
+				task2.setCritical(true);
 			}
+			findFinalTask().setCritical(true);
+			findStartTask().setCritical(true);
+			return longestWay;
+		} catch (Error e) {
+			System.out.println("Invalid input - PERT chart is cyclic");
+			System.exit(0);
 		}
-		for(Task task2 : tasks){
-			task2.setCritical(true);
-		}
-		findFinalTask().setCritical(true);
-		findStartTask().setCritical(true);
-		System.out.println(tasks);
-		return longestWay;
+		return duration;
 	}
 	
 	public Task findFinalTask(){
 		for(Task task  : tasksList){
 			if(task.getSuccessorTask().size()==0){
-				System.out.println(task);
 				return task;
 			}
 		}
@@ -127,7 +165,6 @@ public class Container
 	public Task findStartTask(){
 		for(Task task  : tasksList){
 			if(task.getPredcessorTask().size()==0){
-				System.out.println(task);
 				return task;
 			}
 		}
